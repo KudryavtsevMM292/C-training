@@ -1,7 +1,36 @@
-#include <iostream>
-#include <sstream>
 #include "warehouseclass.h"
 using namespace std;
+
+unsigned int requestelementnumber(warehouse &whouse)
+{
+   string userinp; 
+   if (whouse.isempty()) 
+       {
+           cout << "Database is empty" <<endl;
+           return 0;
+       }
+      else
+        {
+           cout << "There are currently " << whouse.getcount() << " elements in database." << endl;
+           cout << "Enter the number of required element (ranging from 1 to " << whouse.getcount() << ")\n";
+           cin >> userinp;
+           unsigned int k=0;
+           stringstream(userinp) >> k;
+           if ( (k>=1)&&(k<=whouse.getcount()) ) 
+              return(k);      
+              else
+              {
+                  cout << "Value out of range. Command aborted." << endl;
+                  return 0;
+              }
+        }     
+}
+
+void printstatus(warehouse &whouse)
+{
+   cout << "Currently " << whouse.getcount() << " elements in database." << endl;
+   cout << "Type next command" << endl; 
+}    
 
 int main(int argc, char **argv)
 {
@@ -14,37 +43,44 @@ int main(int argc, char **argv)
         if (userinp=="help")
         {
            whouse.printhelp();
-           cout << "Type next command" << endl;
+           printstatus(whouse);
         }   
         else if (userinp=="add")
         {    
            if (whouse.getcount()>=whouse.getcap())
                whouse.expand();
            whouse.additem();
-           cout << "Type next command" << endl;
+           printstatus(whouse);
         }
         else if (userinp=="print")
         {
            if (!whouse.isempty()) whouse.printall();
               else cout << "Database is empty" <<endl;
-           cout << "Type next command" << endl;
+           printstatus(whouse);
         }
         else if (userinp=="mod_by_number")
         {
-           if (whouse.isempty()) cout << "Database is empty" <<endl;
-             else
-             {
-                cout << "There are currently " << whouse.getcount() << " elements in database." << endl;
-                cout << "Enter the number of required element (ranging from 1 to " << whouse.getcount() << ")\n";
-                cin >> userinp;
-                unsigned int k=0;
-                stringstream(userinp) >> k;
-                if ( (k>=1)&&(k<=whouse.getcount()) ) 
-                    whouse.moditem(k-1);
-                    else cout << "Value out of range. Command aborted." << endl;
-             }   
-           cout << "Type next command" << endl;
-        }        
+           int k=requestelementnumber(whouse); 
+           if (k!=0) whouse.moditem(k-1);
+           printstatus(whouse);
+        }
+        else if (userinp=="del_by_number")
+        {
+           int k=requestelementnumber(whouse); 
+           if (k!=0) whouse.delitem(k-1);
+           printstatus(whouse);
+        }
+        else if (userinp=="save")
+        {
+           if (!whouse.isempty()) whouse.save();
+              else cout << "Database is empty" <<endl;
+           printstatus(whouse);
+        }
+        else if (userinp=="load")
+        {
+           whouse.load();
+           printstatus(whouse);
+        }         
         else if (userinp=="exit")
         {          
            return 0;

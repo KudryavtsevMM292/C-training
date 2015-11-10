@@ -1,3 +1,6 @@
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #include "itemclass.h"
 
 class warehouse
@@ -15,6 +18,9 @@ public:
     void expand();
     void additem();
     void moditem(unsigned int index);
+    void delitem(unsigned int index);
+    void save();
+    void load();
     void printall();
     void printhelp();    
 };
@@ -30,7 +36,7 @@ void warehouse::expand()
 {
     item *temp;
     temp=new item[cap*2];
-    for (unsigned int i=0; i<cap-1 ;i++)
+    for (unsigned int i=0; i<cap ;i++)
         temp[i]=cargo[i];
     delete [] cargo;
     cap*=2;
@@ -63,6 +69,13 @@ void warehouse::additem()
     count++;    
 }
 
+void warehouse::delitem(unsigned int index)
+{
+    for(unsigned int i=index; i<count-1; i++)
+        cargo[i]=cargo[i+1];
+    count--;
+}
+
 void warehouse::moditem(unsigned int index)
 {
     std::string userinp;
@@ -86,6 +99,83 @@ void warehouse::moditem(unsigned int index)
     std::stringstream(userinp) >> cargo[index].quan;
 
     std::cout << "Input accepted\n";
+}
+
+void warehouse::save()
+{
+    std::string userinp;
+    std::cout << "Enter file name without extension (for example: data1)\n";
+    std::cin >> userinp;
+    userinp+=".txt";
+    std::ofstream curfile;
+    curfile.open(userinp.c_str());
+    if (curfile.is_open())
+      {
+         //curfile << "number of elements\n";
+         curfile << count << "\n";
+         for (unsigned int i=0; i<count; i++)
+          {
+            curfile << "###\n";
+            //curfile << "element " << (i+1) << " id:\n";
+            curfile << cargo[i].id << "\n";
+            //curfile << "element " << (i+1) << " name:\n";
+            curfile << cargo[i].name << "\n";
+            //curfile << "element " << (i+1) << " property 1:\n";
+            curfile << cargo[i].value1 << "\n";
+            //curfile << "element " << (i+1) << " property 2:\n";
+            curfile << cargo[i].value2 << "\n";
+            //curfile << "element " << (i+1) << " quantity:\n";
+            curfile << cargo[i].quan << "\n";
+          } 
+         curfile.close();
+      }
+      else std::cout << "Unable to open file\n";    
+}
+
+void warehouse::load()
+{
+    std::string userinp;
+    std::cout << "Enter file name without extension (for example: data1)\n";
+    std::cin >> userinp;
+    userinp+=".txt";
+    std::ifstream curfile;
+    curfile.open(userinp.c_str());
+    if (curfile.is_open())
+      {
+         std::string line;
+         getline(curfile,line);                         //read number of elements
+         unsigned int tempcount;
+         std::stringstream(line) >> tempcount;
+         unsigned int tempcap=tempcount*2;
+         item *temp;                                    //temporary storage
+         temp=new item[tempcap];
+         unsigned int c=0;   
+         for (unsigned int i=0; i<tempcount; i++)
+           {
+            if (!getline(curfile,line)) break;                      //read separator
+            if (line=="###") c++;
+            if (!getline(curfile,line)) break;                      //read id
+            std::stringstream(line) >> temp[i].id;            
+            if (!getline(curfile,line)) break;                      //read name
+            temp[i].name=line;            
+            if (!getline(curfile,line)) break;                      //read value 1
+            std::stringstream(line) >> temp[i].value1;            
+            if (!getline(curfile,line)) break;                      //read value 2
+            temp[i].value2=line[0];            
+            if (!getline(curfile,line)) break;                      //read quantity
+            std::stringstream(line) >> temp[i].quan;
+           } 
+         curfile.close();
+         if (c==tempcount)
+           {
+             cap=tempcap;
+             count=tempcount;
+             delete [] cargo;
+             cargo=temp;    
+           }
+           else std::cout << "Data is corrupted, command aborted\n";
+      }
+      else std::cout << "Unable to open file\n";     
 }
 
 void warehouse::printall()
@@ -113,7 +203,10 @@ void warehouse::printhelp()
     std::cout << "Command line instructions:\n";
     std::cout << "add: append new element to the database\n";
     std::cout << "mod_by_number: edit database element with specified number\n";
-    std::cout << "print: display contents of the entire database\n";
+    std::cout << "del_by_number: delete database element with specified number\n";
+    std::cout << "save: saves current database to disk\n";
+    std::cout << "load: loads database from disk\n";
+    std::cout << "print: display contents of the current database\n";
     std::cout << "exit: terminate the program\n";
     std::cout << std::endl;    
 }
