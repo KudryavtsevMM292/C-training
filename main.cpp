@@ -3,7 +3,6 @@ using namespace std;
 
 unsigned int requestelementnumber(warehouse &whouse)
 {
-   string userinp; 
    if (whouse.isempty()) 
        {
            cout << "Database is empty" <<endl;
@@ -13,14 +12,14 @@ unsigned int requestelementnumber(warehouse &whouse)
         {
            cout << "There are currently " << whouse.getcount() << " elements in database." << endl;
            cout << "Enter the number of required element (ranging from 1 to " << whouse.getcount() << ")\n";
-           cin >> userinp;
            unsigned int k=0;
-           stringstream(userinp) >> k;
+           cin >> k;
            if ( (k>=1)&&(k<=whouse.getcount()) ) 
               return(k);      
               else
               {
                   cout << "Value out of range. Command aborted." << endl;
+                  cin.clear();
                   return 0;
               }
         }     
@@ -29,7 +28,8 @@ unsigned int requestelementnumber(warehouse &whouse)
 void printstatus(warehouse &whouse)
 {
    cout << "Currently " << whouse.getcount() << " elements in database." << endl;
-   cout << "Type next command" << endl; 
+   cout << "Type next command" << endl;
+   cin.clear();
 }    
 
 int main(int argc, char **argv)
@@ -47,8 +47,6 @@ int main(int argc, char **argv)
         }   
         else if (userinp=="add")
         {    
-           if (whouse.getcount()>=whouse.getcap())
-               whouse.expand();
            whouse.additem();
            printstatus(whouse);
         }
@@ -85,7 +83,11 @@ int main(int argc, char **argv)
         {          
            return 0;
         }        
-        else cout << "Invalid command. Type ""help"" for a list of avaliable commands" <<endl;
+        else 
+        {
+           cout << "Invalid command. Type ""help"" for a list of avaliable commands" <<endl;
+           cin.clear();
+        }
         
     }
 }
