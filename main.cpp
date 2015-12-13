@@ -3,32 +3,33 @@ using namespace std;
 
 unsigned int requestelementnumber(warehouse &whouse)
 {
-   if (whouse.isempty()) 
-       {
-           cout << "Database is empty" <<endl;
-           return 0;
-       }
+  if (whouse.isempty()) 
+  {
+    cout << "Database is empty" <<endl;
+    return 0;
+  }
+  else
+    {
+      cout << "There are currently " << whouse.getcount() << " elements in database." << endl;
+      cout << "Enter the number of required element (ranging from 1 to " << whouse.getcount() << ")\n";
+      int k=0;
+      while ( !(PromtValue(&k)) );
+      if ( (k>=1)&&(k<=whouse.getcount()) ) return(k);      
       else
         {
-           cout << "There are currently " << whouse.getcount() << " elements in database." << endl;
-           cout << "Enter the number of required element (ranging from 1 to " << whouse.getcount() << ")\n";
-           unsigned int k=0;
-           cin >> k;
-           if ( (k>=1)&&(k<=whouse.getcount()) ) 
-              return(k);      
-              else
-              {
-                  cout << "Value out of range. Command aborted." << endl;
-                  cin.clear();
-                  return 0;
-              }
-        }     
+          cout << "Value out of range. Command aborted." << endl;
+          cin.ignore();
+          cin.clear();
+          return 0;
+        }
+    }     
 }
 
 void printstatus(warehouse &whouse)
 {
    cout << "Currently " << whouse.getcount() << " elements in database." << endl;
    cout << "Type next command" << endl;
+   cin.ignore();
    cin.clear();
 }    
 
@@ -86,6 +87,7 @@ int main(int argc, char **argv)
         else 
         {
            cout << "Invalid command. Type ""help"" for a list of avaliable commands" <<endl;
+           cin.ignore();
            cin.clear();
         }
         
